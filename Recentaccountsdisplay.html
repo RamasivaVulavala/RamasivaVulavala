@@ -1,0 +1,39 @@
+ Lightning Component  (recentAccountsList.cmp):
+
+<aura:component controller="RecentAccountsController">
+    <aura:attribute name="recentAccounts" type="Account[]" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+
+    <ul>
+        <aura:iteration items="{!v.recentAccounts}" var="account">
+            <li>{!account.Name}</li>
+        </aura:iteration>
+    </ul>
+</aura:component>
+
+
+ Lightning Component Controller (recentAccountsController.js):
+ 
+({
+    init: function(component, event, helper) {
+        // Call the server-side controller method to fetch recent accounts
+        var action = component.get("c.getRecentAccounts");
+        action.setCallback(this, function(response) {
+            var state = response.getState();
+            if (state === "SUCCESS") {
+                component.set("v.recentAccounts", response.getReturnValue());
+            }
+        });
+        $A.enqueueAction(action);
+    }
+})
+
+Apex Controller (RecentAccountsController.cls):
+
+public with sharing class RecentAccountsController {
+    @AuraEnabled
+    public static List<Account> getRecentAccounts() {
+        return [SELECT Id, Name FROM Account ORDER BY CreatedDate DESC LIMIT 10];
+    }
+}

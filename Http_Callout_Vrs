@@ -1,0 +1,28 @@
+public class HttpCallout{
+    public static void makeHttpCallout() {
+        
+        String url = 'https://postman-echo.com/get?foo1=bar1&foo2=bar2';
+
+        // Create an HTTP request
+        HttpRequest httpRequest = new HttpRequest();
+        httpRequest.setEndpoint(url);
+        httpRequest.setMethod('GET');
+
+        // Create an HTTP object to send the request
+        Http http = new Http();
+
+        try {
+            
+            HttpResponse httpResponse = http.send(httpRequest);
+
+            if (httpResponse.getStatusCode() == 200) { 
+                String responseBody = httpResponse.getBody();
+                System.debug('HTTP Response: ' + responseBody);
+            } else {
+                System.debug('HTTP Request failed with status code: ' + httpResponse.getStatusCode());
+            }
+        } catch (Exception e) {
+            System.debug('HTTP Request Exception: ' + e.getMessage());
+        }
+    }
+}
